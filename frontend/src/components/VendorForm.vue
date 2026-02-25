@@ -32,7 +32,10 @@
           type="email"
           required
           placeholder="contact@example.com"
+          :class="{ 'input-error': emailError }"
+          @input="emailError = ''"
         />
+        <div v-if="emailError" class="field-error">{{ emailError }}</div>
       </div>
 
       <div class="form-group">
@@ -61,6 +64,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useVendorStore } from '../stores/vendorStore'
+import { VendorService } from '../services/VendorService'
 import type { Vendor } from '../types/Vendor'
 
 const vendorStore = useVendorStore()
@@ -74,12 +78,14 @@ const form = reactive<Vendor>({
 
 const success = ref(false)
 const submitting = ref(false) //flag to restrict multiple submissions
+const emailError = ref('') //flag to check email error existence
 
 const resetForm = () => {
   form.name = ''
   form.contact_person = ''
   form.email = ''
   form.partner_type = 'Supplier'
+  emailError.value = '' //reset email error when form is reset
 }
 
 const submitForm = async () => {
@@ -87,8 +93,17 @@ const submitForm = async () => {
 
   submitting.value = true //set the flag when submission starts
   success.value = false
+  emailError.value = '' //reset email error before submission
 
   try {
+    //check email existence before calling store action to provide faster feedback to user
+    const emailExists = await VendorService.checkEmailExists(form.email)
+    if (emailExists) {
+      emailError.value =
+        'A vendor with this email id already exists. Please use a different email id.'
+      submitting.value = false
+      return
+    }
     await vendorStore.addVendor({ ...form })
     success.value = true
 
@@ -165,5 +180,16 @@ button:disabled {
 .success-message {
   color: #4caf50;
   margin-top: 10px;
+}
+
+.input-error {
+  border-color: #f44336;
+  outline-color: #f44336;
+}
+
+.field-error {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 4px;
 }
 </style>

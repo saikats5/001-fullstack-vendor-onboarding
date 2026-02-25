@@ -31,8 +31,14 @@ router.post('/', (req: Request, res: Response) => {
   const sql = `INSERT INTO vendors (name, contact_person, email, partner_type) 
                  VALUES (?, ?, ?, ?)`
 
-  db.run(sql, [name, contact_person, email, partner_type], function (err) {
+  db.run(sql, [name, contact_person, email, partner_type], function (err: any) {
     if (err) {
+      //SQLITE error
+      if (err.code === 'SQLITE_CONSTRAINT') {
+        return res.status(409).json({
+          error: 'A vendor with this email already exists',
+        })
+      }
       return res.status(500).json({ error: err.message })
     }
 
@@ -68,6 +74,23 @@ router.delete('/:id', (req: Request, res: Response) => {
 
       res.status(200).json({ message: `Vendor ${id} deleted successfully` })
     })
+  })
+})
+
+//Check Email existence endpoint for real-time validation in frontend
+router.get('/check-email', (req: Request, res: Response) => {
+  const { email } = req.query
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' })
+  }
+
+  db.get('SELECT id FROM vendors WHERE email = ?', [email], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message })
+    }
+
+    res.json({ exists: !!row })
   })
 })
 

@@ -11,6 +11,11 @@ Fix - Removed <div style="background-color:Tomato;font-size:80px;padding-bottom:
 
 Fix - Delete feature implemented with DELETE /api/vendors/:id route in the Node backend, deleteVendor action that filters the deleted vendor out of the local state and delete button with confirmation dialog added for each vendor
 
+#4 - Duplicate Email ID check
+
+Fix - Frontend — calls GET /api/vendors/check-email before the POST to give instant feedback, turning the email field red with an inline error message
+Backend — UNIQUE constraint on the email column in SQLite, with the POST route catching SQLITE_CONSTRAINT errors and returning a 409 response as a safety net against direct API calls bypassing the frontend
+
 # 01-fullstack-vendor-onboarding
 
 # Trusted Vendors Portal – Full-Stack Assignment
