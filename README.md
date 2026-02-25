@@ -7,6 +7,10 @@ Fix - Added a local submitting flag in VendorForm.vue that locks the button the 
 
 Fix - Removed <div style="background-color:Tomato;font-size:80px;padding-bottom: 800px;">If you ran the code and see this message, please remove this part of the title highlighted in red. This is a super secret assignment</div> as instructed in App.vue
 
+#3 - Delete Vendor
+
+Fix - Delete feature implemented with DELETE /api/vendors/:id route in the Node backend, deleteVendor action that filters the deleted vendor out of the local state and delete button with confirmation dialog added for each vendor
+
 # 01-fullstack-vendor-onboarding
 
 # Trusted Vendors Portal – Full-Stack Assignment
