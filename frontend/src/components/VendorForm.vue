@@ -4,99 +4,105 @@
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input 
-          id="name" 
-          v-model="form.name" 
-          type="text" 
-          required 
+        <input
+          id="name"
+          v-model="form.name"
+          type="text"
+          required
           placeholder="Company name"
         />
       </div>
-      
+
       <div class="form-group">
         <label for="contactPerson">Contact Person:</label>
-        <input 
-          id="contactPerson" 
-          v-model="form.contact_person" 
-          type="text" 
-          required 
+        <input
+          id="contactPerson"
+          v-model="form.contact_person"
+          type="text"
+          required
           placeholder="Contact person name"
         />
       </div>
-      
+
       <div class="form-group">
         <label for="email">Email:</label>
-        <input 
-          id="email" 
-          v-model="form.email" 
-          type="email" 
-          required 
+        <input
+          id="email"
+          v-model="form.email"
+          type="email"
+          required
           placeholder="contact@example.com"
         />
       </div>
-      
+
       <div class="form-group">
         <label for="partnerType">Partner Type:</label>
-        <select 
-          id="partnerType" 
-          v-model="form.partner_type" 
-          required
-        >
+        <select id="partnerType" v-model="form.partner_type" required>
           <option value="Supplier">Supplier</option>
           <option value="Partner">Partner</option>
         </select>
       </div>
-      
+
       <div class="form-actions">
-        <button type="submit" :disabled="vendorStore.loading">
-          {{ vendorStore.loading ? 'Submitting...' : 'Add Vendor' }}
+        <button type="submit" :disabled="submitting">
+          {{ submitting ? 'Submitting...' : 'Add Vendor' }}
         </button>
-        <div v-if="vendorStore.error" class="error-message">{{ vendorStore.error }}</div>
-        <div v-if="success" class="success-message">Vendor added successfully!</div>
+        <div v-if="vendorStore.error" class="error-message">
+          {{ vendorStore.error }}
+        </div>
+        <div v-if="success" class="success-message">
+          Vendor added successfully!
+        </div>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { useVendorStore } from '../stores/vendorStore';
-import type { Vendor } from '../types/Vendor';
+import { reactive, ref } from 'vue'
+import { useVendorStore } from '../stores/vendorStore'
+import type { Vendor } from '../types/Vendor'
 
-const vendorStore = useVendorStore();
+const vendorStore = useVendorStore()
 
 const form = reactive<Vendor>({
   name: '',
   contact_person: '',
   email: '',
-  partner_type: 'Supplier'
-});
+  partner_type: 'Supplier',
+})
 
-const success = ref(false);
+const success = ref(false)
+const submitting = ref(false) //flag to restrict multiple submissions
 
 const resetForm = () => {
-  form.name = '';
-  form.contact_person = '';
-  form.email = '';
-  form.partner_type = 'Supplier';
-};
+  form.name = ''
+  form.contact_person = ''
+  form.email = ''
+  form.partner_type = 'Supplier'
+}
 
 const submitForm = async () => {
-  success.value = false;
-  
+  if (submitting.value) return //restrict multiple submissions
+
+  submitting.value = true //set the flag when submission starts
+  success.value = false
+
   try {
-    await vendorStore.addVendor({ ...form });
-    success.value = true;
-    
+    await vendorStore.addVendor({ ...form })
+    success.value = true
+
     // Reset the form after successful submission
     setTimeout(() => {
-      resetForm();
-      success.value = false;
-    }, 2000);
+      resetForm()
+      success.value = false
+      submitting.value = false // reset the flag after submission is complete
+    }, 2000)
   } catch (err) {
     // Error is already handled in the store
+    submitting.value = false // reset the flag after error is complete
   }
-};
+}
 </script>
 
 <style scoped>
@@ -134,7 +140,7 @@ const submitForm = async () => {
 
 button {
   padding: 10px 15px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -157,7 +163,7 @@ button:disabled {
 }
 
 .success-message {
-  color: #4CAF50;
+  color: #4caf50;
   margin-top: 10px;
 }
 </style>
