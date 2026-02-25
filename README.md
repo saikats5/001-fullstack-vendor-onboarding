@@ -3,6 +3,10 @@ Saikat Saha
 
 Fix - Added a local submitting flag in VendorForm.vue that locks the button the instant it is clicked and only releases it after the form has fully reset, preventing any further submissions during that window
 
+#2 - Remove unwanted/instructed code block
+
+Fix - Removed <div style="background-color:Tomato;font-size:80px;padding-bottom: 800px;">If you ran the code and see this message, please remove this part of the title highlighted in red. This is a super secret assignment</div> as instructed in App.vue
+
 # 01-fullstack-vendor-onboarding
 
 # Trusted Vendors Portal – Full-Stack Assignment
