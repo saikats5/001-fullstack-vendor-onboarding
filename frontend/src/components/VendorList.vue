@@ -1,7 +1,7 @@
 <template>
   <div class="vendor-list">
     <h2>Vendor List</h2>
-    <div v-if="vendorStore.loading">Loading vendors...</div>
+    <div v-if="vendorStore.loading" class="loading">Loading vendors...</div>
     <div v-else-if="vendorStore.error" class="error">
       {{ vendorStore.error }}
     </div>
@@ -20,11 +20,22 @@
       </thead>
       <tbody>
         <tr v-for="vendor in vendorStore.vendors" :key="vendor.id">
-          <td>{{ vendor.id }}</td>
-          <td>{{ vendor.name }}</td>
-          <td>{{ vendor.contact_person }}</td>
-          <td>{{ vendor.email }}</td>
-          <td>{{ vendor.partner_type }}</td>
+          <td data-label="ID">{{ vendor.id }}</td>
+          <td data-label="Name">{{ vendor.name }}</td>
+          <td data-label="Contact">{{ vendor.contact_person }}</td>
+          <td data-label="Email">{{ vendor.email }}</td>
+          <td data-label="Type">
+            <span
+              :class="[
+                'badge',
+                vendor.partner_type === 'Supplier'
+                  ? 'badge--supplier'
+                  : 'badge--partner',
+              ]"
+            >
+              {{ vendor.partner_type }}
+            </span>
+          </td>
           <td>
             <button
               class="delete-btn"
@@ -102,136 +113,3 @@ const handleDelete = async () => {
   }
 }
 </script>
-
-<style scoped>
-.vendor-list {
-  position: relative;
-  margin: 20px 0;
-}
-
-.vendors-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-.vendors-table th,
-.vendors-table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.vendors-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-.vendors-table tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* Delete Button */
-.delete-btn {
-  padding: 5px 12px;
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.delete-btn:hover {
-  background-color: #c62828;
-}
-
-.delete-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Confirmation Dialog */
-.dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.dialog {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.dialog h3 {
-  margin-bottom: 15px;
-  color: #2c3e50;
-}
-
-.dialog p {
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.dialog-subtext {
-  font-size: 13px;
-  color: #999;
-}
-
-.dialog-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.cancel-btn {
-  padding: 8px 20px;
-  background-color: #f5f5f5;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.cancel-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.confirm-btn {
-  padding: 8px 20px;
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.confirm-btn:hover {
-  background-color: #c62828;
-}
-
-.error {
-  color: red;
-  padding: 10px;
-}
-
-.no-vendors {
-  padding: 20px;
-  text-align: center;
-  color: #666;
-}
-</style>

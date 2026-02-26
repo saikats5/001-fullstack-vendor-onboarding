@@ -1,0 +1,338 @@
+@use 'mixins' as *;
+
+.vendor-list {
+  @include card;
+  position: relative;
+  overflow: hidden;
+
+  h2 {
+    @include section-heading;
+  }
+
+  // ============================================
+  // LOADING SPINNER
+  // ============================================
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-muted);
+    padding: var(--space-md) 0;
+
+    &::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      border: 2px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // ============================================
+  // TABLE — mobile first
+  // ============================================
+  .vendors-table {
+    width: 100%;
+    min-width: 0;
+    font-size: var(--font-size-sm);
+
+    // Hide header on mobile
+    thead {
+      display: none;
+
+      @include md {
+        display: table-header-group;
+      }
+    }
+
+    // Stack rows as block on mobile
+    tbody {
+      display: block;
+      width: 100%;
+
+      @include md {
+        display: table-row-group;
+      }
+    }
+
+    // Each row is a card on mobile
+    tr {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background-color: var(--color-surface);
+      box-shadow: 0 1px 4px var(--color-shadow);
+
+      @include md {
+        display: table-row;
+        border: none;
+        border-radius: 0;
+        margin-bottom: 0;
+        padding: 0;
+        box-shadow: none;
+        background-color: transparent;
+      }
+    }
+
+    // Each cell is a labelled row on mobile
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) 0;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text);
+      word-break: break-word;
+
+      &:last-child {
+        border-bottom: none;
+        padding-top: var(--space-sm);
+        justify-content: flex-end;
+
+        &::before {
+          display: none;
+        }
+      }
+
+      &::before {
+        content: attr(data-label);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+        margin-right: var(--space-sm);
+      }
+
+      @include md {
+        display: table-cell;
+        padding: var(--space-sm) var(--space-md);
+        border-bottom: 1px solid var(--color-border);
+        vertical-align: middle;
+        word-break: normal;
+
+        &::before {
+          display: none;
+        }
+
+        &:last-child {
+          border-bottom: 1px solid var(--color-border);
+          padding-top: var(--space-sm);
+          justify-content: unset;
+        }
+      }
+    }
+
+    th {
+      background-color: var(--color-table-header);
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      padding: var(--space-sm) var(--space-md);
+      text-align: left;
+      border-bottom: 2px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    // Zebra, hover, focus — desktop only
+    @include md {
+      border-collapse: collapse;
+
+      tbody tr:nth-child(even) td {
+        background-color: var(--color-table-stripe);
+      }
+
+      tbody tr:hover td {
+        background-color: var(--color-table-hover);
+      }
+
+      tbody tr:focus-within td {
+        background-color: var(--color-table-hover);
+      }
+    }
+  }
+
+  // ============================================
+  // PARTNER TYPE BADGE
+  // ============================================
+  .badge {
+    display: inline-block;
+    padding: 2px var(--space-sm);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+
+    &--supplier {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--color-primary);
+    }
+
+    &--partner {
+      background-color: rgba(22, 163, 74, 0.1);
+      color: var(--color-success);
+    }
+  }
+
+  // ============================================
+  // EMPTY STATE
+  // ============================================
+  .no-vendors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--color-text-muted);
+    text-align: center;
+    gap: var(--space-sm);
+
+    &::before {
+      content: '🏢';
+      font-size: 48px;
+    }
+  }
+
+  // ============================================
+  // ERROR STATE
+  // ============================================
+  .error {
+    color: var(--color-danger);
+    padding: var(--space-md);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-md);
+    background-color: rgba(229, 57, 53, 0.05);
+  }
+
+  // ============================================
+  // DELETE BUTTON
+  // ============================================
+  .delete-btn {
+    padding: var(--space-xs) var(--space-sm);
+    background-color: transparent;
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    transition: all var(--transition);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-danger);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // ============================================
+  // CONFIRMATION DIALOG
+  // ============================================
+  .dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    padding: var(--space-md);
+  }
+
+  .dialog {
+    background: var(--color-surface);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px var(--color-shadow);
+    border: 1px solid var(--color-border);
+
+    @include md {
+      padding: var(--space-xl);
+    }
+
+    h3 {
+      margin-bottom: var(--space-md);
+      color: var(--color-text);
+    }
+
+    p {
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+      word-break: break-word;
+    }
+
+    .dialog-subtext {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: var(--space-sm);
+      justify-content: center;
+      margin-top: var(--space-lg);
+    }
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition);
+    text-align: center;
+
+    @include md {
+      flex: unset;
+      padding: var(--space-sm) var(--space-lg);
+    }
+  }
+
+  .cancel-btn {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+
+    &:hover {
+      background-color: var(--color-border);
+    }
+  }
+
+  .confirm-btn {
+    background-color: var(--color-danger);
+    color: white;
+    border: none;
+
+    &:hover {
+      background-color: var(--color-danger-hover);
+    }
+  }
+}

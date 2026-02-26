@@ -1,0 +1,183 @@
+@use 'variables';
+@use 'mixins' as *;
+@use 'vendor-form';
+@use 'vendor-list';
+
+// ============================================
+// RESET
+// ============================================
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+// ============================================
+// APP SHELL
+// ============================================
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-bg);
+  transition: background-color var(--transition);
+}
+
+// ============================================
+// HEADER
+// ============================================
+.app-header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-sm) var(--space-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-shadow: 0 1px 4px var(--color-shadow);
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+
+  @include md {
+    padding: var(--space-md) var(--space-xl);
+  }
+
+  .header-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+
+  .header-logo {
+    font-size: 20px;
+    flex-shrink: 0;
+
+    @include md {
+      font-size: 28px;
+    }
+  }
+
+  h1 {
+    font-size: var(--font-size-base);
+    color: var(--color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @include sm {
+      font-size: var(--font-size-lg);
+    }
+
+    @include md {
+      font-size: var(--font-size-xl);
+    }
+  }
+}
+
+// ============================================
+// THEME TOGGLE
+// ============================================
+.theme-toggle {
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition);
+
+  @include md {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+}
+
+// ============================================
+// MAIN LAYOUT
+// ============================================
+.app-main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm);
+
+  @include sm {
+    padding: var(--space-md);
+  }
+
+  @include md {
+    padding: var(--space-xl);
+  }
+}
+
+.content-layout {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+
+  @include sm {
+    gap: var(--space-lg);
+  }
+
+  @include lg {
+    grid-template-columns: 400px 1fr;
+    align-items: start;
+    gap: var(--space-xl);
+  }
+}
+
+.form-panel,
+.list-panel {
+  width: 100%;
+  min-width: 0;
+}

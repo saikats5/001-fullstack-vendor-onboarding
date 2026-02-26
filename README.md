@@ -16,6 +16,10 @@ Fix - Delete feature implemented with DELETE /api/vendors/:id route in the Node 
 Fix - Frontend — calls GET /api/vendors/check-email before the POST to give instant feedback, turning the email field red with an inline error message
 Backend — UNIQUE constraint on the email column in SQLite, with the POST route catching SQLITE_CONSTRAINT errors and returning a 409 response as a safety net against direct API calls bypassing the frontend
 
+#5 - UI Polish
+
+Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast
+
 # 01-fullstack-vendor-onboarding
 
 # Trusted Vendors Portal – Full-Stack Assignment
