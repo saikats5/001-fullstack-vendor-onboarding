@@ -21,9 +21,11 @@
       <tbody>
         <tr v-for="vendor in vendorStore.vendors" :key="vendor.id">
           <td data-label="ID">{{ vendor.id }}</td>
-          <td data-label="Name">{{ vendor.name }}</td>
-          <td data-label="Contact">{{ vendor.contact_person }}</td>
-          <td data-label="Email">{{ vendor.email }}</td>
+          <td data-label="Name" :title="vendor.name">{{ vendor.name }}</td>
+          <td data-label="Contact" :title="vendor.contact_person">
+            {{ vendor.contact_person }}
+          </td>
+          <td data-label="Email" :title="vendor.email">{{ vendor.email }}</td>
           <td data-label="Type">
             <span
               :class="[

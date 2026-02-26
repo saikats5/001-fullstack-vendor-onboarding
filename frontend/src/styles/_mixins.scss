@@ -1,9 +1,17 @@
-// Breakpoints
+// ============================================
+// BREAKPOINTS
+// ============================================
+$bp-xs: 360px;
 $bp-sm: 480px;
 $bp-md: 768px;
 $bp-lg: 1024px;
 
-// Mobile first breakpoint mixins
+@mixin xs {
+  @media (min-width: $bp-xs) {
+    @content;
+  }
+}
+
 @mixin sm {
   @media (min-width: $bp-sm) {
     @content;
@@ -22,7 +30,9 @@ $bp-lg: 1024px;
   }
 }
 
-// Reusable UI mixins
+// ============================================
+// UI MIXINS
+// ============================================
 @mixin focus-ring {
   outline: none;
   border-color: var(--color-input-focus);
@@ -33,17 +43,22 @@ $bp-lg: 1024px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-sm);
+
+  @include xs {
+    padding: var(--space-md);
+  }
+
+  @include md {
+    padding: var(--space-xl);
+  }
+
   box-shadow: 0 2px 8px var(--color-shadow);
   transition:
     background-color var(--transition),
     border-color var(--transition);
   width: 100%;
   min-width: 0;
-
-  @include md {
-    padding: var(--space-xl);
-  }
 }
 
 @mixin section-heading {
