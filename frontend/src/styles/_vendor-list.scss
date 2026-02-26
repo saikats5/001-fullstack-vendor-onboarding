@@ -88,7 +88,7 @@
     }
 
     // ============================================
-    // MOBILE CELL — labelled rows
+    // MOBILE CELL
     // ============================================
     td {
       display: flex;
@@ -121,7 +121,6 @@
         flex-shrink: 0;
       }
 
-      // Value side — truncate on mobile too if needed
       span:not(.badge) {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -131,33 +130,32 @@
       }
 
       // ============================================
-      // DESKTOP CELL — ellipsis truncation
+      // DESKTOP CELL
       // ============================================
       @include md {
         display: table-cell;
-        padding: var(--space-sm) var(--space-md);
+        padding: var(--space-sm) var(--space-sm);
         border-bottom: 1px solid var(--color-border);
         vertical-align: middle;
         word-break: normal;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 0; // required for ellipsis with table-layout: fixed
+        max-width: 0;
 
         &::before {
           display: none;
         }
 
-        &:last-child {
-          border-bottom: 1px solid var(--color-border);
-          padding-top: var(--space-sm);
+        &:first-child {
           white-space: nowrap;
-          overflow: visible; // don't clip the delete button
+          overflow: visible;
           text-overflow: unset;
         }
 
-        // ID column — no truncation needed
-        &:first-child {
+        &:last-child {
+          border-bottom: 1px solid var(--color-border);
+          padding-top: var(--space-sm);
           white-space: nowrap;
           overflow: visible;
           text-overflow: unset;
@@ -165,65 +163,65 @@
       }
     }
 
+    // ============================================
+    // TABLE HEADER
+    // ============================================
     th {
       background-color: var(--color-table-header);
       font-weight: var(--font-weight-bold);
-      font-size: var(--font-size-sm);
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
       color: var(--color-text-muted);
-      padding: var(--space-sm) var(--space-md);
+      padding: var(--space-sm) var(--space-sm);
       text-align: left;
       border-bottom: 2px solid var(--color-border);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      line-height: 1.3;
     }
 
     // ============================================
-    // DESKTOP TABLE — fixed layout + column widths
+    // DESKTOP TABLE — fixed layout
     // ============================================
     @include md {
       border-collapse: collapse;
-      table-layout: fixed; // key — enables ellipsis on table cells
+      table-layout: fixed;
 
-      // Column widths
       th:nth-child(1),
       td:nth-child(1) {
-        width: 55px;
-      } // ID
+        width: 45px;
+      }
       th:nth-child(2),
       td:nth-child(2) {
-        width: 18%;
-      } // Name
+        width: 20%;
+      }
       th:nth-child(3),
       td:nth-child(3) {
-        width: 18%;
-      } // Contact
+        width: 20%;
+      }
       th:nth-child(4),
       td:nth-child(4) {
-        width: 26%;
-      } // Email
+        width: 28%;
+      }
       th:nth-child(5),
       td:nth-child(5) {
-        width: 110px;
-      } // Type
+        width: 95px;
+      }
       th:nth-child(6),
       td:nth-child(6) {
-        width: 90px;
-      } // Actions
+        width: 75px;
+      }
 
-      // Zebra striping
       tbody tr:nth-child(even) td {
         background-color: var(--color-table-stripe);
       }
 
-      // Hover
       tbody tr:hover td {
         background-color: var(--color-table-hover);
       }
 
-      // Focus accessibility
       tbody tr:focus-within td {
         background-color: var(--color-table-hover);
       }

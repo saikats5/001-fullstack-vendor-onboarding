@@ -76,7 +76,7 @@ h3 {
 
   .header-content {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -166,7 +166,7 @@ h3 {
 // ============================================
 .app-main {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: var(--space-xs);
 
@@ -179,7 +179,7 @@ h3 {
   }
 
   @include md {
-    padding: var(--space-xl);
+    padding: var(--space-lg);
   }
 }
 
@@ -199,9 +199,9 @@ h3 {
   }
 
   @include lg {
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 320px 1fr;
     align-items: start;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
   }
 }
 

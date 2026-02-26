@@ -16,6 +16,7 @@
           <th>Contact Person</th>
           <th>Email</th>
           <th>Partner Type</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
