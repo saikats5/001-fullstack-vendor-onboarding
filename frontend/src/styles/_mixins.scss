@@ -11,19 +11,16 @@ $bp-lg: 1024px;
     @content;
   }
 }
-
 @mixin sm {
   @media (min-width: $bp-sm) {
     @content;
   }
 }
-
 @mixin md {
   @media (min-width: $bp-md) {
     @content;
   }
 }
-
 @mixin lg {
   @media (min-width: $bp-lg) {
     @content;
@@ -33,38 +30,90 @@ $bp-lg: 1024px;
 // ============================================
 // UI MIXINS
 // ============================================
+
+// Card container
+@mixin card {
+  width: 100%;
+  min-width: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  padding: var(--space-sm);
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+
+  @include xs {
+    padding: var(--space-md);
+  }
+  @include md {
+    padding: var(--space-xl);
+  }
+}
+
+// Section heading with underline
+@mixin section-heading {
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+// Input/select focus ring
 @mixin focus-ring {
   outline: none;
   border-color: var(--color-input-focus);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-@mixin card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-sm);
+// Shared base for all buttons
+@mixin btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  border: none;
 
-  @include xs {
-    padding: var(--space-md);
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
-
-  @include md {
-    padding: var(--space-xl);
-  }
-
-  box-shadow: 0 2px 8px var(--color-shadow);
-  transition:
-    background-color var(--transition),
-    border-color var(--transition);
-  width: 100%;
-  min-width: 0;
 }
 
-@mixin section-heading {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-sm);
-  border-bottom: 2px solid var(--color-primary);
+// Shared base for form inputs and selects
+@mixin input-base {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
   color: var(--color-text);
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+
+  &:hover:not(:focus) {
+    border-color: var(--color-primary);
+  }
+
+  &:focus {
+    @include focus-ring;
+  }
+}
+
+// Inline feedback message (error or success)
+@mixin feedback-message {
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-sm);
 }

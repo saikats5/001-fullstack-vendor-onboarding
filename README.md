@@ -18,7 +18,7 @@ Backend — UNIQUE constraint on the email column in SQLite, with the POST route
 
 #5 - UI Polish
 
-Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast
+Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast, 4-Improved the table structure with efficient data visibility across all screens and also implementation of searching, sorting and pagination features
 
 # 01-fullstack-vendor-onboarding
 

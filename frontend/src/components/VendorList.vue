@@ -1,26 +1,65 @@
 <template>
   <div class="vendor-list">
     <h2>Vendor List</h2>
+
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input
+        v-model="vendorStore.searchQuery"
+        type="text"
+        placeholder="Search by name, email, contact or type..."
+        class="search-input"
+      />
+      <button
+        v-if="vendorStore.searchQuery"
+        class="search-clear"
+        @click="vendorStore.searchQuery = ''"
+        aria-label="Clear search"
+      >
+        ✕
+      </button>
+    </div>
+
     <div v-if="vendorStore.loading" class="loading">Loading vendors...</div>
     <div v-else-if="vendorStore.error" class="error">
       {{ vendorStore.error }}
     </div>
-    <div v-else-if="vendorStore.vendors.length === 0" class="no-vendors">
-      No vendors found. Add your first vendor!
+    <div
+      v-else-if="vendorStore.filteredVendors.length === 0"
+      class="no-vendors"
+    >
+      <span v-if="vendorStore.searchQuery">
+        No vendors found for "<strong>{{ vendorStore.searchQuery }}</strong
+        >"
+      </span>
+      <span v-else>No vendors found. Add your first vendor!</span>
     </div>
+
     <table v-else class="vendors-table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Contact Person</th>
-          <th>Email</th>
-          <th>Partner Type</th>
+          <th @click="vendorStore.setSort('id')" class="sortable">
+            ID <span class="sort-icon">{{ getSortIcon('id') }}</span>
+          </th>
+          <th @click="vendorStore.setSort('name')" class="sortable">
+            Name <span class="sort-icon">{{ getSortIcon('name') }}</span>
+          </th>
+          <th @click="vendorStore.setSort('contact_person')" class="sortable">
+            Contact Person
+            <span class="sort-icon">{{ getSortIcon('contact_person') }}</span>
+          </th>
+          <th @click="vendorStore.setSort('email')" class="sortable">
+            Email <span class="sort-icon">{{ getSortIcon('email') }}</span>
+          </th>
+          <th @click="vendorStore.setSort('partner_type')" class="sortable">
+            Partner Type
+            <span class="sort-icon">{{ getSortIcon('partner_type') }}</span>
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="vendor in vendorStore.vendors" :key="vendor.id">
+        <tr v-for="vendor in vendorStore.filteredVendors" :key="vendor.id">
           <td data-label="ID">{{ vendor.id }}</td>
           <td data-label="Name" :title="vendor.name">{{ vendor.name }}</td>
           <td data-label="Contact" :title="vendor.contact_person">
@@ -51,7 +90,17 @@
         </tr>
       </tbody>
     </table>
-    <!-- Confirmation Dialog - Start -->
+
+    <!-- Result count -->
+    <div
+      v-if="!vendorStore.loading && vendorStore.filteredVendors.length > 0"
+      class="result-count"
+    >
+      Showing {{ vendorStore.filteredVendors.length }} of
+      {{ vendorStore.vendors.length }} vendors
+    </div>
+
+    <!-- Confirmation Dialog -->
     <div v-if="showConfirm" class="dialog-overlay">
       <div class="dialog">
         <h3>Confirm Delete</h3>
@@ -67,7 +116,6 @@
         </div>
       </div>
     </div>
-    <!-- Confirmation Dialog - End -->
   </div>
 </template>
 
@@ -76,10 +124,8 @@ import { ref, onMounted } from 'vue'
 import { useVendorStore } from '../stores/vendorStore'
 import type { Vendor } from '../types/Vendor'
 
-// Using the vendor store directly, no need for local props or state
 const vendorStore = useVendorStore()
 
-// Deletion state
 const showConfirm = ref(false)
 const vendorToDelete = ref<Vendor | null>(null)
 const deletingId = ref<number | null>(null)
@@ -88,13 +134,17 @@ onMounted(() => {
   vendorStore.fetchVendors()
 })
 
-// Execute deletion after confirmation
+// Returns sort icon for a given field
+const getSortIcon = (field: string) => {
+  if (vendorStore.sortField !== field) return '↕'
+  return vendorStore.sortDirection === 'asc' ? '↑' : '↓'
+}
+
 const confirmDelete = (vendor: Vendor) => {
   vendorToDelete.value = vendor
   showConfirm.value = true
 }
 
-// Cancel deletion
 const cancelDelete = () => {
   vendorToDelete.value = null
   showConfirm.value = false
@@ -109,7 +159,7 @@ const handleDelete = async () => {
   try {
     await vendorStore.deleteVendor(vendorToDelete.value.id)
   } catch (err) {
-    // Error
+    // Error handled in store
   } finally {
     deletingId.value = null
     vendorToDelete.value = null
