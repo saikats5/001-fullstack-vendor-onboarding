@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # ── Backend ────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
+    container_name: vendor-backend
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    volumes:
+      # Mount a named volume for SQLite persistence
+      # Without this, the vendors.db file is lost every time
+      # the container restarts
+      - vendor_data:/app/data
+    networks:
+      - vendor-network
+    # No ports exposed to host — only the frontend nginx
+    # needs to reach the backend, via the internal Docker network
+
+  # ── Frontend ───────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vendor-frontend
+    ports:
+      # Expose port 80 inside the container as port 8080 on your machine
+      # Open http://localhost:8080 in the browser
+      - '8080:80'
+    depends_on:
+      - backend
+    networks:
+      - vendor-network
+
+# ── Named volume for SQLite data persistence ────────────────────
+volumes:
+  vendor_data:
+
+# ── Internal network for service-to-service communication ───────
+networks:
+  vendor-network:
+    driver: bridge

@@ -26,6 +26,54 @@ Backend — UNIQUE constraint on the email column in SQLite, with the POST route
 
 Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast, 4-Improved the table structure with efficient data visibility across all screens and also implementation of searching, sorting and pagination features 5-Implemented some enhanced features i.e., debounced search, toaster notification, pagination for table and excel download for the list
 
+Approaches
+
+- Layout Approach
+
+The layout uses CSS Grid with a mobile-first strategy. On mobile (below 768px) the form and vendor list stack in a single column. At 768px (tablet) the layout switches to a two-column grid with the form fixed at 380px and the vendor list taking the remaining space. At 1024px (desktop) the form column grows slightly to 420px. The sticky header uses position: sticky; top: 0 so it stays visible while scrolling long vendor lists.
+
+- Design Tokens
+
+All visual values are defined as CSS custom properties in src/styles/\_variables.scss and applied globally via :root. This means changing a single token (e.g. --color-primary) updates every button, border, and focus ring across the entire app at once. Tokens cover colours, spacing (4px base scale), typography (font family, sizes, weights), border radii, and transition duration.
+
+- Dark Mode
+
+The theme toggle writes data-theme="dark" to document.documentElement. A [data-theme='dark'] selector in \_variables.scss overrides every CSS variable to its dark equivalent. No JavaScript is needed to restyle individual components — the cascade handles everything. On first load the toggle respects the user's OS preference via window.matchMedia('(prefers-color-scheme: dark)').
+
+- Accessibility
+
+All form inputs have associated <label> elements
+The theme toggle button has a descriptive aria-label that updates with state
+Focus states use a visible box-shadow ring on all interactive elements
+The vendor table uses tr:focus-within to highlight rows when any cell receives keyboard focus
+The empty state is rendered as a <p> inside the table body rather than hiding the table, keeping screen reader context intact
+The confirmation dialog uses role="dialog" semantics and traps user intent before destructive actions
+
+- Delete Vendor
+
+Added a DELETE /api/vendors/:id route to the Node backend. The route first checks the vendor exists and returns a 404 if not found, then deletes and returns 204 No Content. On the frontend a delete button was added to each table row. Clicking it sets a local vendorToDelete ref which triggers the confirmation dialog to appear. The dialog shows the vendor's name so the user knows exactly what they are deleting. On confirmation the store's deleteVendor action calls the API and then filters the deleted vendor out of local state immediately without re-fetching the whole list, keeping the UI snappy.
+
+- Fix Duplicate Submit Bug
+
+The original form used vendorStore.loading to disable the submit button, but this flag is shared with the vendor list's fetch cycle and could briefly toggle between states, leaving a window where rapid clicks would fire multiple POST requests. The fix introduces a local submitting ref owned entirely by the form component. It is set to true synchronously on the first click (closing the race window) and an if (submitting.value) return guard at the top of the handler ensures any subsequent calls exit immediately. On success submitting is reset inside the setTimeout that clears the form, so the button stays locked for the full 2-second success window. On error it resets immediately in the catch block so the user can retry.
+
+- Email uniqueness is enforced at three layers:
+  1:- Database — A UNIQUE constraint is added to the email column in the SQLite schema (database.ts). This is the ultimate source of truth and guarantees no duplicates can ever exist regardless of how the API is called.
+  2:- Backend — Before inserting, the Node POST route runs a SELECT query to check if the email already exists. If it does, it returns a 409 Conflict with a clear error message before even attempting the insert. This gives API consumers a meaningful error rather than a raw SQLite constraint violation.
+  3:- Frontend — Before submitting, VendorForm.vue calls VendorService.checkEmailExists() which hits GET /api/vendors?email=.... If the email is already taken, an inline error message appears below the email field and the form submission is blocked entirely. This gives the user immediate feedback without a round-trip to create and then fail.
+
+- Additional Features
+
+1:- Debounced search — filters the vendor list across all fields (name, contact, email, partner type) with a 300ms debounce so the filter only runs after the user stops typing
+2:- Sortable columns — clicking any table header sorts by that field; clicking again reverses direction
+3:- Pagination — configurable page size (5/10/25/50) with first/previous/next/last controls and a result count display
+4:- CSV export — exports the current filtered and sorted vendor list as a dated CSV file
+5:- Toast notifications — success and error toasts appear top-right for all add/delete operations and auto-dismiss after 3 seconds
+
+Trade-offs & Challenges
+
+Pagination and search are handled client-side since the dataset is small; a production system with thousands of vendors would move this to the backend
+
 Questionaire
 
 1. What do I love most about being a software engineer.
