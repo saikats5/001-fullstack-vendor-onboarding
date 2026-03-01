@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import VendorForm from './components/VendorForm.vue'
 import VendorList from './components/VendorList.vue'
+import ToastContainer from './components/ToastContainer.vue'
 
 const isDark = ref(false)
 
@@ -25,6 +26,7 @@ const toggleTheme = () => {
 
 <template>
   <div class="app-container">
+    <ToastContainer />
     <header class="app-header">
       <div class="header-content">
         <div class="header-brand">

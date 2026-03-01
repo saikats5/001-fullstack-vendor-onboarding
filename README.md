@@ -1,4 +1,9 @@
 Saikat Saha
+
+Installation steps
+
+- npm install and npm run dev for both backend-node and frontend folder
+
 #1 - Currently, clicking the "Add" button multiple times before the form resets can result in duplicate vendor entries.
 
 Fix - Added a local submitting flag in VendorForm.vue that locks the button the instant it is clicked and only releases it after the form has fully reset, preventing any further submissions during that window
@@ -18,7 +23,7 @@ Backend — UNIQUE constraint on the email column in SQLite, with the POST route
 
 #5 - UI Polish
 
-Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast, 4-Improved the table structure with efficient data visibility across all screens and also implementation of searching, sorting and pagination features
+Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast, 4-Improved the table structure with efficient data visibility across all screens and also implementation of searching, sorting and pagination features 5-Implemented some enhanced features i.e., debounced search, toaster notification, pagination for table and excel download for the list
 
 # 01-fullstack-vendor-onboarding
 
