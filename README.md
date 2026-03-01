@@ -3,6 +3,7 @@ Saikat Saha
 Installation steps
 
 - npm install and npm run dev for both backend-node and frontend folder
+- npx vitest run inside frontend folder for testing
 
 #1 - Currently, clicking the "Add" button multiple times before the form resets can result in duplicate vendor entries.
 
@@ -24,6 +25,17 @@ Backend — UNIQUE constraint on the email column in SQLite, with the POST route
 #5 - UI Polish
 
 Fix - 1:- Removed all external stylings from both the files and created an explicit styling folder with SASS architecture 2:- Enchanced the mobile view, table columns are enhanced with data label, colourings for labels are enhanced to enhance the visibility, 3-Themming added with good colour contrast, 4-Improved the table structure with efficient data visibility across all screens and also implementation of searching, sorting and pagination features 5-Implemented some enhanced features i.e., debounced search, toaster notification, pagination for table and excel download for the list
+
+Questionaire
+
+1. What do I love most about being a software engineer.
+   A:- What I love most about being a software engineer is the ability to turn ideas into reality through code. Every day brings new challenges that push me to think logically, solve problems creatively, and continuously learn new technologies. It’s rewarding to build solutions that make people’s lives easier and to see something I created actually work and have impact.
+
+2. What is most important to me when it comes to working in a team
+   A:- What’s most important to me when working in a team is clear communication, mutual respect, and shared accountability. I value environments where everyone feels comfortable expressing ideas, listening to others, and collaborating toward a common goal. I believe trust and reliability are essential, so each team member can depend on one another to contribute their best. Ultimately, I aim to support the team’s success while continuously learning and helping others grow.
+
+3. What is the worst part of being a software engineer.
+   A:- One of the worst parts of being a software engineer is dealing with constant change and pressure. Technologies evolve quickly, so you must continuously learn new tools and frameworks just to stay relevant. At the same time, tight deadlines, debugging difficult issues, and fixing production bugs—sometimes outside working hours—can be stressful. This combination of rapid change and high responsibility can lead to mental fatigue if not managed well.
 
 # 01-fullstack-vendor-onboarding
 

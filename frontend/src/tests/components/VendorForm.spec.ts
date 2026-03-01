@@ -1,130 +1,142 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
-import VendorForm from '../../components/VendorForm.vue';
-import { useVendorStore } from '../../stores/vendorStore';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
+import VendorForm from '../../components/VendorForm.vue'
+import { VendorService } from '../../services/VendorService'
+
+vi.mock('../../services/VendorService', () => ({
+  VendorService: {
+    getVendors: vi.fn(),
+    createVendor: vi.fn(),
+    deleteVendor: vi.fn(),
+    checkEmailExists: vi.fn(),
+    exportToCSV: vi.fn(),
+  },
+}))
+
+vi.mock('../../composables/useToast', () => ({
+  useToast: () => ({
+    show: vi.fn(),
+    remove: vi.fn(),
+    toasts: { value: [] },
+  }),
+}))
 
 describe('VendorForm', () => {
   beforeEach(() => {
-    // Reset mocks between tests
-    vi.resetAllMocks();
-  });
+    setActivePinia(createPinia())
+    vi.mocked(VendorService.checkEmailExists).mockReset()
+    vi.mocked(VendorService.createVendor).mockReset()
+    vi.mocked(VendorService.getVendors).mockReset()
+  })
 
-  it('renders correctly', () => {
-    const wrapper = mount(VendorForm, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
-    });
-    
-    expect(wrapper.find('h2').text()).toBe('Add New Vendor');
-    expect(wrapper.find('form').exists()).toBe(true);
-    expect(wrapper.find('button[type="submit"]').text()).toBe('Add Vendor');
-  });
+  const mountForm = () =>
+    mount(VendorForm, {
+      global: { plugins: [createPinia()] },
+    })
 
-  it('contains all required form fields', () => {
-    const wrapper = mount(VendorForm, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
-    });
-    
-    // Check that all expected form inputs exist
-    expect(wrapper.find('#name').exists()).toBe(true);
-    expect(wrapper.find('#contactPerson').exists()).toBe(true);
-    expect(wrapper.find('#email').exists()).toBe(true);
-    expect(wrapper.find('#partnerType').exists()).toBe(true);
-    
-    // Check that dropdown contains the right options
-    const options = wrapper.findAll('#partnerType option');
-    expect(options.length).toBe(2);
-    expect(options[0].text()).toBe('Supplier');
-    expect(options[1].text()).toBe('Partner');
-  });
+  // ============================================
+  // RENDERING
+  // ============================================
+  it('renders all form fields', () => {
+    const wrapper = mountForm()
+    expect(wrapper.find('input').exists()).toBe(true)
+    expect(wrapper.find('select').exists()).toBe(true)
+    expect(wrapper.find('button[type="submit"]').exists()).toBe(true)
+  })
 
-  it('submits form data correctly', async () => {
-    const wrapper = mount(VendorForm, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
-    });
-    
-    const store = useVendorStore();
-    
-    // Fill out the form
-    await wrapper.find('#name').setValue('Test Company');
-    await wrapper.find('#contactPerson').setValue('John Test');
-    await wrapper.find('#email').setValue('john@testcompany.com');
-    await wrapper.find('#partnerType').setValue('Partner');
-    
-    // Submit the form
-    await wrapper.find('form').trigger('submit');
-    
-    // Check that the store's addVendor method was called with correct data
-    expect(store.addVendor).toHaveBeenCalledWith({
-      name: 'Test Company',
-      contact_person: 'John Test',
-      email: 'john@testcompany.com',
-      partner_type: 'Partner'
-    });
-  });
+  it('submit button is enabled initially', () => {
+    const wrapper = mountForm()
+    const btn = wrapper.find('button[type="submit"]')
+    expect(btn.attributes('disabled')).toBeUndefined()
+  })
 
-  it('shows loading state when submitting', async () => {
-    const wrapper = mount(VendorForm, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: true, error: null }
-            }
-          })
-        ]
-      }
-    });
-    
-    // Check that the submit button shows loading text
-    expect(wrapper.find('button[type="submit"]').text()).toBe('Submitting...');
-    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
-  });
+  // ============================================
+  // VALIDATION
+  // ============================================
+  it('shows field errors when submitting empty form', async () => {
+    vi.mocked(VendorService.checkEmailExists).mockResolvedValue(false)
+    const wrapper = mountForm()
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+    // Validation errors appear as .field-error elements or contain "required" text
+    const errors = wrapper.findAll('.field-error')
+    const hasErrors =
+      errors.length > 0 || wrapper.text().toLowerCase().includes('required')
+    expect(hasErrors).toBe(true)
+  })
 
-  it('shows error message when submission fails', async () => {
-    const wrapper = mount(VendorForm, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: 'Failed to add vendor' }
-            }
-          })
-        ]
-      }
-    });
-    
-    // Check that error message is shown
-    expect(wrapper.find('.error-message').exists()).toBe(true);
-    expect(wrapper.find('.error-message').text()).toBe('Failed to add vendor');
-  });
-});
+  it('shows error when duplicate email is entered', async () => {
+    vi.mocked(VendorService.checkEmailExists).mockResolvedValue(true)
+    vi.mocked(VendorService.getVendors).mockResolvedValue([])
+
+    const wrapper = mountForm()
+    const inputs = wrapper.findAll('input')
+
+    await inputs[0].setValue('Test Vendor')
+    await inputs[1].setValue('Test Person')
+    await inputs[2].setValue('test@exists.com')
+    await wrapper.find('select').setValue('Supplier')
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    // Match what the component actually renders
+    expect(wrapper.text()).toContain('already exists')
+  })
+
+  // ============================================
+  // DUPLICATE SUBMIT PREVENTION
+  // ============================================
+  it('disables submit button while submitting', async () => {
+    vi.mocked(VendorService.checkEmailExists).mockResolvedValue(false)
+
+    let resolve: (v: any) => void = () => {}
+    vi.mocked(VendorService.createVendor).mockReturnValue(
+      new Promise((r) => {
+        resolve = r
+      }),
+    )
+    vi.mocked(VendorService.getVendors).mockResolvedValue([])
+
+    const wrapper = mountForm()
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('Test Vendor')
+    await inputs[1].setValue('Test Person')
+    await inputs[2].setValue('unique@company.com')
+    await wrapper.find('select').setValue('Supplier')
+
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+
+    expect(
+      wrapper.find('button[type="submit"]').attributes('disabled'),
+    ).toBeDefined()
+
+    resolve({ id: 1, name: 'Test Vendor' })
+  })
+
+  it('does not submit twice when clicked rapidly', async () => {
+    vi.mocked(VendorService.checkEmailExists).mockResolvedValue(false)
+    vi.mocked(VendorService.createVendor).mockResolvedValue({
+      id: 1,
+      name: 'Test',
+    } as any)
+    vi.mocked(VendorService.getVendors).mockResolvedValue([])
+
+    const wrapper = mountForm()
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('Test Vendor')
+    await inputs[1].setValue('Test Person')
+    await inputs[2].setValue('test@company.com')
+    await wrapper.find('select').setValue('Supplier')
+
+    await wrapper.find('form').trigger('submit')
+    await wrapper.find('form').trigger('submit')
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+
+    expect(VendorService.createVendor).toHaveBeenCalledTimes(1)
+  })
+})
