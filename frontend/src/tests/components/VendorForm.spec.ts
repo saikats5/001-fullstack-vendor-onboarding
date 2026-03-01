@@ -47,24 +47,44 @@ describe('VendorForm', () => {
 
   it('submit button is enabled initially', () => {
     const wrapper = mountForm()
-    const btn = wrapper.find('button[type="submit"]')
-    expect(btn.attributes('disabled')).toBeUndefined()
+    expect(
+      wrapper.find('button[type="submit"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
+  it('defaults partner_type select to Supplier', () => {
+    const wrapper = mountForm()
+    const select = wrapper.find('select')
+    expect((select.element as HTMLSelectElement).value).toBe('Supplier')
   })
 
   // ============================================
-  // VALIDATION
+  // SUBMISSION
   // ============================================
-  it('shows field errors when submitting empty form', async () => {
+  it('calls createVendor with correct payload on valid submit', async () => {
     vi.mocked(VendorService.checkEmailExists).mockResolvedValue(false)
+    vi.mocked(VendorService.createVendor).mockResolvedValue({
+      id: 1,
+      name: 'Test Vendor',
+    } as any)
+    vi.mocked(VendorService.getVendors).mockResolvedValue([])
+
     const wrapper = mountForm()
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('Test Vendor')
+    await inputs[1].setValue('Test Person')
+    await inputs[2].setValue('test@company.com')
+    await wrapper.find('select').setValue('Partner')
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
-    // Validation errors appear as .field-error elements or contain "required" text
-    const errors = wrapper.findAll('.field-error')
-    const hasErrors =
-      errors.length > 0 || wrapper.text().toLowerCase().includes('required')
-    expect(hasErrors).toBe(true)
+
+    expect(VendorService.createVendor).toHaveBeenCalledWith({
+      name: 'Test Vendor',
+      contact_person: 'Test Person',
+      email: 'test@company.com',
+      partner_type: 'Partner',
+    })
   })
 
   it('shows error when duplicate email is entered', async () => {
@@ -73,7 +93,6 @@ describe('VendorForm', () => {
 
     const wrapper = mountForm()
     const inputs = wrapper.findAll('input')
-
     await inputs[0].setValue('Test Vendor')
     await inputs[1].setValue('Test Person')
     await inputs[2].setValue('test@exists.com')
@@ -82,8 +101,8 @@ describe('VendorForm', () => {
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
-    // Match what the component actually renders
     expect(wrapper.text()).toContain('already exists')
+    expect(VendorService.createVendor).not.toHaveBeenCalled()
   })
 
   // ============================================
