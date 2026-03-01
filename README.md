@@ -69,6 +69,7 @@ The original form used vendorStore.loading to disable the submit button, but thi
 3:- Pagination — configurable page size (5/10/25/50) with first/previous/next/last controls and a result count display
 4:- CSV export — exports the current filtered and sorted vendor list as a dated CSV file
 5:- Toast notifications — success and error toasts appear top-right for all add/delete operations and auto-dismiss after 3 seconds
+6:- Tests are written using Vitest and Vue Test Utils, covering the Pinia store, form component, and list component across 46 test cases
 
 Trade-offs & Challenges
 
